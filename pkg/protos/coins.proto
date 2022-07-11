@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "./coins";
+
+message CoinRequest {
+   string Description = 1;
+   string Short = 2;
+}
+
+message CoinResponse {
+   int32 ID = 1;
+   string Description = 2;
+   string Short = 3;
+}
+
+
+service CoinService {
+   rpc CreateCoin( CoinRequest ) returns (CoinResponse){}
+}
+
