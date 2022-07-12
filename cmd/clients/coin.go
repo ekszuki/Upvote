@@ -19,7 +19,7 @@ func main() {
 
 	resp, err := grpcCli.CreateCoin(
 		context.Background(),
-		&coins.CoinRequest{
+		&coins.CreateCoinRequest{
 			Description: "Coin 1",
 			Short:       "C1",
 		},
