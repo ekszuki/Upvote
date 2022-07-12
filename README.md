@@ -12,3 +12,9 @@ Technical Challenger Klever.io
 
     - List active coins
       # grpcurl --plaintext localhost:9090 CoinService/ListActiveCoins
+
+    - Coin vote up
+      # grpcurl --plaintext -d '{ "CoinID": 1 }' localhost:9090 CoinService/VoteUP
+
+    - Coin vote down
+      # grpcurl --plaintext -d '{ "CoinID": 1 }' localhost:9090 CoinService/VoteDown
