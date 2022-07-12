@@ -12,4 +12,5 @@ type Repository interface {
 	ListActive(ctx context.Context) ([]domain.Coin, error)
 	VoteUP(ctx context.Context, coinID uint) error
 	VoteDown(ctx context.Context, coinID uint) error
+	FindByID(ctx context.Context, coinID uint) (*domain.Coin, error)
 }

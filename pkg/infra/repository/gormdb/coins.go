@@ -2,6 +2,7 @@ package gormdb
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -12,6 +13,18 @@ import (
 
 type coinRepository struct {
 	db *gorm.DB
+}
+
+// FindByID implements coins.Repository
+func (r *coinRepository) FindByID(ctx context.Context, coinID uint) (*domain.Coin, error) {
+	coin := new(Coin)
+	err := r.db.First(&coin, coinID).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return coin.ToDomain(), fmt.Errorf("coin id %d not found", coinID)
+	}
+
+	return coin.ToDomain(), err
 }
 
 // VoteDown implements coins.Repository
