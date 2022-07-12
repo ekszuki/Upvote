@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"klever.io/interview/pkg/domain/coins"
 	protoCoins "klever.io/interview/pkg/protos/coins"
+	protoMonitor "klever.io/interview/pkg/protos/monitors"
 	"klever.io/interview/utils"
 )
 
@@ -15,6 +16,7 @@ type Repositories struct {
 
 type Server struct {
 	protoCoins.UnimplementedCoinServiceServer
+	protoMonitor.UnimplementedVoteMonitorServer
 	GRPCServer   *gGrpc.Server
 	Repositories Repositories
 }
@@ -28,6 +30,7 @@ func NewServer(repositories Repositories) *Server {
 		Repositories: repositories,
 	}
 	protoCoins.RegisterCoinServiceServer(grpcServer, s)
+	protoMonitor.RegisterVoteMonitorServer(grpcServer, s)
 
 	if utils.GetEnv("GRPC_REFLECTION", "S") == "S" {
 		reflection.Register(grpcServer)

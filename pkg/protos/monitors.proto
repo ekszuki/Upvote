@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+
+option go_package = "./monitors";
+option (gogoproto.sizer_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) =  true;
+
+import "gogoproto/gogo.proto";
+
+message CoinVoteMonitorResponse {
+   int32 ID = 1;
+   string Description = 2;
+   string Short = 3;
+   int64  Votes = 4;
+   string LastUpdate = 5;
+}
+
+message CoinVoteMonitorRequest {
+   int32 CoinID = 1;
+}
+
+service VoteMonitor {
+   rpc CoinMonitorVotes(CoinVoteMonitorRequest) returns (stream CoinVoteMonitorResponse){}
+}
