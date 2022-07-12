@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 
+	"github.com/AlekSi/pointer"
 	"github.com/sirupsen/logrus"
 	"klever.io/interview/pkg/domain"
 	"klever.io/interview/pkg/domain/coins"
@@ -92,4 +93,25 @@ func (a CoinApplication) FindByID(ctx context.Context, coinID uint) (*domain.Coi
 	}
 
 	return coin, err
+}
+
+func (a *CoinApplication) UpdateCoin(
+	ctx context.Context,
+	domainCoin *domain.Coin,
+) (*domain.Coin, error) {
+	logCtx := logrus.WithFields(logrus.Fields{"component": "CoinApplication", "method": "UpdateCoin"})
+	var updatedCoin = new(domain.Coin)
+
+	err := a.coinRepository.Update(ctx, domainCoin)
+	if err != nil {
+		logCtx.Errorf("could not update coin: %v", err)
+		return updatedCoin, err
+	}
+
+	updatedCoin, err = a.coinRepository.FindByID(ctx, pointer.GetUint(domainCoin.ID))
+	if err != nil {
+		logCtx.Errorf("could not get update coin: %v", err)
+	}
+
+	return updatedCoin, err
 }

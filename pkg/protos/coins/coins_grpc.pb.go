@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CoinServiceClient interface {
 	CreateCoin(ctx context.Context, in *CreateCoinRequest, opts ...grpc.CallOption) (*CreateCoinResponse, error)
 	DeleteCoin(ctx context.Context, in *DeleteCoinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateCoin(ctx context.Context, in *UpdateCoinRequest, opts ...grpc.CallOption) (*UpdateCoinResponse, error)
 	ListActiveCoins(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ActiveCoinsResponse, error)
 	VoteUP(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	VoteDown(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -50,6 +51,15 @@ func (c *coinServiceClient) CreateCoin(ctx context.Context, in *CreateCoinReques
 func (c *coinServiceClient) DeleteCoin(ctx context.Context, in *DeleteCoinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/CoinService/DeleteCoin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coinServiceClient) UpdateCoin(ctx context.Context, in *UpdateCoinRequest, opts ...grpc.CallOption) (*UpdateCoinResponse, error) {
+	out := new(UpdateCoinResponse)
+	err := c.cc.Invoke(ctx, "/CoinService/UpdateCoin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,6 +99,7 @@ func (c *coinServiceClient) VoteDown(ctx context.Context, in *VoteRequest, opts 
 type CoinServiceServer interface {
 	CreateCoin(context.Context, *CreateCoinRequest) (*CreateCoinResponse, error)
 	DeleteCoin(context.Context, *DeleteCoinRequest) (*emptypb.Empty, error)
+	UpdateCoin(context.Context, *UpdateCoinRequest) (*UpdateCoinResponse, error)
 	ListActiveCoins(context.Context, *emptypb.Empty) (*ActiveCoinsResponse, error)
 	VoteUP(context.Context, *VoteRequest) (*emptypb.Empty, error)
 	VoteDown(context.Context, *VoteRequest) (*emptypb.Empty, error)
@@ -104,6 +115,9 @@ func (UnimplementedCoinServiceServer) CreateCoin(context.Context, *CreateCoinReq
 }
 func (UnimplementedCoinServiceServer) DeleteCoin(context.Context, *DeleteCoinRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCoin not implemented")
+}
+func (UnimplementedCoinServiceServer) UpdateCoin(context.Context, *UpdateCoinRequest) (*UpdateCoinResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCoin not implemented")
 }
 func (UnimplementedCoinServiceServer) ListActiveCoins(context.Context, *emptypb.Empty) (*ActiveCoinsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListActiveCoins not implemented")
@@ -159,6 +173,24 @@ func _CoinService_DeleteCoin_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CoinServiceServer).DeleteCoin(ctx, req.(*DeleteCoinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoinService_UpdateCoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCoinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoinServiceServer).UpdateCoin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CoinService/UpdateCoin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoinServiceServer).UpdateCoin(ctx, req.(*UpdateCoinRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -231,6 +263,10 @@ var CoinService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCoin",
 			Handler:    _CoinService_DeleteCoin_Handler,
+		},
+		{
+			MethodName: "UpdateCoin",
+			Handler:    _CoinService_UpdateCoin_Handler,
 		},
 		{
 			MethodName: "ListActiveCoins",

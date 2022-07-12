@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/AlekSi/pointer"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -104,4 +105,33 @@ func (s *Server) VoteDown(
 	logCtx.Info("finishing gRPC Request")
 
 	return &emptypb.Empty{}, err
+}
+
+func (s *Server) UpdateCoin(
+	ctx context.Context, req *protoCoin.UpdateCoinRequest,
+) (*protoCoin.UpdateCoinResponse, error) {
+	logCtx := logrus.WithFields(logrus.Fields{"component": "gRPCServer", "method": "UpdateCoin"})
+	logCtx.Info("starting gRPC request")
+	resp := new(protoCoin.UpdateCoinResponse)
+
+	if req.GetID() == 0 || req.GetDescription() == "" || req.Short == "" {
+		logCtx.Warn("invalid coin update request")
+		return resp, fmt.Errorf("invalid coin udpate request")
+	}
+
+	if !req.ProtoReflect().IsValid() {
+		logCtx.Warn("invalid coin vote request")
+		return resp, fmt.Errorf("invalid coin udpate request")
+	}
+
+	domainCoin := &domain.Coin{
+		ID:          pointer.ToUint(uint(req.GetID())),
+		Description: req.GetDescription(),
+		Short:       req.GetShort(),
+	}
+
+	coinApp := application.NewCoinApplication(s.Repositories.Coins)
+	updatedCoin, err := coinApp.UpdateCoin(ctx, domainCoin)
+
+	return toUpdateResponse(updatedCoin), err
 }

@@ -44,3 +44,12 @@ func toCoinVoteMonitorResponse(coin *domain.Coin) *protoMonitor.CoinVoteMonitorR
 
 	return r
 }
+
+func toUpdateResponse(coin *domain.Coin) *protoCoin.UpdateCoinResponse {
+	r := &protoCoin.UpdateCoinResponse{
+		Description: coin.Description,
+		Short:       coin.Short,
+	}
+
+	return r
+}

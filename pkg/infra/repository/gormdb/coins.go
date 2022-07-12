@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/AlekSi/pointer"
 	"gorm.io/gorm"
 	"klever.io/interview/pkg/domain"
 	"klever.io/interview/pkg/domain/coins"
@@ -13,6 +14,27 @@ import (
 
 type coinRepository struct {
 	db *gorm.DB
+}
+
+// Update implements coins.Repository
+func (r *coinRepository) Update(ctx context.Context, coin *domain.Coin) error {
+	dbOpe := r.db.Model(&Coin{}).
+		Omit("votes").
+		Where("id = ?", coin.ID).
+		Updates(map[string]interface{}{
+			"description": coin.Description,
+			"short":       coin.Short,
+		})
+
+	if dbOpe.Error != nil {
+		return dbOpe.Error
+	}
+
+	if dbOpe.RowsAffected <= 0 {
+		return fmt.Errorf("coin id %d not found", pointer.GetUint(coin.ID))
+	}
+
+	return nil
 }
 
 // FindByID implements coins.Repository
@@ -82,8 +104,8 @@ func (r *coinRepository) Delete(ctx context.Context, coinID uint) error {
 // Save implements coins.Repository
 func (r *coinRepository) Save(ctx context.Context, coin *domain.Coin) (*domain.Coin, error) {
 	dbCoin := FromDomain(coin)
-	result := r.db.Save(&dbCoin)
-	return dbCoin.ToDomain(), result.Error
+	err := r.db.Save(&dbCoin).Error
+	return dbCoin.ToDomain(), err
 }
 
 func NewCoinRepository() coins.Repository {

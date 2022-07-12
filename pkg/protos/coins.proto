@@ -27,9 +27,22 @@ message VoteRequest {
    int32 CoinID = 1;
 }
 
+message UpdateCoinRequest {
+   int32 ID = 1;
+   string Description = 2;
+   string Short = 3;
+}
+
+message UpdateCoinResponse {
+   string Description = 2;
+   string Short = 3;
+}
+
+
 service CoinService {
    rpc CreateCoin(CreateCoinRequest) returns (CreateCoinResponse){}
    rpc DeleteCoin(DeleteCoinRequest) returns (google.protobuf.Empty){}
+   rpc UpdateCoin(UpdateCoinRequest) returns (UpdateCoinResponse){}
    rpc ListActiveCoins(google.protobuf.Empty) returns (ActiveCoinsResponse){}
    rpc VoteUP(VoteRequest) returns (google.protobuf.Empty){}
    rpc VoteDown(VoteRequest) returns (google.protobuf.Empty){}

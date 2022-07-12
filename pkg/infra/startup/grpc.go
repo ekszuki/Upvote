@@ -41,6 +41,10 @@ func (s *Startup) Initialize() {
 	// we can to define that repositories we'll want to create.
 	repos := createGormDBRepositories()
 
+	// to use MongoDB database for example, we just inject the repository here
+	// instead of GormDB Repository like this
+	// repos := createMongoDBRepositories()
+
 	logCtx.Infof("gRPC Server running on address: %s", addr)
 	server := grpc.NewServer(repos)
 	go func() {
@@ -65,3 +69,13 @@ func createGormDBRepositories() grpc.Repositories {
 	}
 	return repos
 }
+
+// func createMongoDBRepositories() grpc.Repositories {
+// 	logCtx := logrus.WithFields(logrus.Fields{"component": "startup", "function": "createGormDBRepositories"})
+// 	logCtx.Info("Creating repositories")
+
+// 	repos := grpc.Repositories{
+// 		Coins: mongodb.NewCoinRepository(),
+// 	}
+// 	return repos
+// }
