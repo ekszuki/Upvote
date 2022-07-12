@@ -11,4 +11,5 @@ type Repository interface {
 	Delete(ctx context.Context, coinID uint) error
 	ListActive(ctx context.Context) ([]domain.Coin, error)
 	VoteUP(ctx context.Context, coinID uint) error
+	VoteDown(ctx context.Context, coinID uint) error
 }

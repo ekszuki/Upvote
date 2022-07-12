@@ -32,5 +32,6 @@ service CoinService {
    rpc DeleteCoin(DeleteCoinRequest) returns (google.protobuf.Empty){}
    rpc ListActiveCoins(google.protobuf.Empty) returns (ActiveCoinsResponse){}
    rpc VoteUP(VoteRequest) returns (google.protobuf.Empty){}
+   rpc VoteDown(VoteRequest) returns (google.protobuf.Empty){}
 }
 

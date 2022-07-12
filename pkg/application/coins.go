@@ -68,3 +68,15 @@ func (a *CoinApplication) CoinVoteUP(ctx context.Context, coinID uint) error {
 
 	return err
 }
+
+func (a *CoinApplication) CoinVoteDown(ctx context.Context, coinID uint) error {
+	logCtx := logrus.WithFields(
+		logrus.Fields{"component": "CoinApplication", "method": "CoinVoteDown"},
+	)
+	err := a.coinRepository.VoteDown(ctx, coinID)
+	if err != nil {
+		logCtx.Errorf("could not vote on coin id: %d, error: %v", coinID, err)
+	}
+
+	return err
+}

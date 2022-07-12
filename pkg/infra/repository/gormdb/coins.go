@@ -14,6 +14,23 @@ type coinRepository struct {
 	db *gorm.DB
 }
 
+// VoteDown implements coins.Repository
+func (r *coinRepository) VoteDown(ctx context.Context, coinID uint) error {
+	dbOpe := r.db.Model(&Coin{}).
+		Where("id = ?", coinID).
+		Update("votes", gorm.Expr("votes - ?", 1))
+
+	if dbOpe.Error != nil {
+		return dbOpe.Error
+	}
+
+	if dbOpe.RowsAffected <= 0 {
+		return fmt.Errorf("coin not found")
+	}
+
+	return nil
+}
+
 // VoteUP implements coins.Repository
 func (r *coinRepository) VoteUP(ctx context.Context, coinID uint) error {
 	dbOpe := r.db.Model(&Coin{}).
@@ -25,7 +42,7 @@ func (r *coinRepository) VoteUP(ctx context.Context, coinID uint) error {
 	}
 
 	if dbOpe.RowsAffected <= 0 {
-		return fmt.Errorf("Coin not found")
+		return fmt.Errorf("coin not found")
 	}
 
 	return nil

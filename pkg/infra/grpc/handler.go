@@ -77,12 +77,30 @@ func (s *Server) VoteUP(
 	logCtx.Info("starting gRPC request")
 
 	if !req.ProtoReflect().IsValid() {
-		logCtx.Warn("invalid delete coin request")
+		logCtx.Warn("invalid coin vote request")
 		return &empty.Empty{}, fmt.Errorf("invalid vote up request")
 	}
 
 	coinApp := application.NewCoinApplication(s.Repositories.Coins)
 	err := coinApp.CoinVoteUP(ctx, uint(req.GetCoinID()))
+	logCtx.Info("finishing gRPC Request")
+
+	return &emptypb.Empty{}, err
+}
+
+func (s *Server) VoteDown(
+	ctx context.Context, req *protoCoin.VoteRequest,
+) (*emptypb.Empty, error) {
+	logCtx := logrus.WithFields(logrus.Fields{"component": "gRPCServer", "method": "VoteDown"})
+	logCtx.Info("starting gRPC request")
+
+	if !req.ProtoReflect().IsValid() {
+		logCtx.Warn("invalid coin vote request")
+		return &empty.Empty{}, fmt.Errorf("invalid vote down request")
+	}
+
+	coinApp := application.NewCoinApplication(s.Repositories.Coins)
+	err := coinApp.CoinVoteDown(ctx, uint(req.GetCoinID()))
 	logCtx.Info("finishing gRPC Request")
 
 	return &emptypb.Empty{}, err

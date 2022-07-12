@@ -27,6 +27,7 @@ type CoinServiceClient interface {
 	DeleteCoin(ctx context.Context, in *DeleteCoinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListActiveCoins(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ActiveCoinsResponse, error)
 	VoteUP(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	VoteDown(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type coinServiceClient struct {
@@ -73,6 +74,15 @@ func (c *coinServiceClient) VoteUP(ctx context.Context, in *VoteRequest, opts ..
 	return out, nil
 }
 
+func (c *coinServiceClient) VoteDown(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/CoinService/VoteDown", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CoinServiceServer is the server API for CoinService service.
 // All implementations must embed UnimplementedCoinServiceServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type CoinServiceServer interface {
 	DeleteCoin(context.Context, *DeleteCoinRequest) (*emptypb.Empty, error)
 	ListActiveCoins(context.Context, *emptypb.Empty) (*ActiveCoinsResponse, error)
 	VoteUP(context.Context, *VoteRequest) (*emptypb.Empty, error)
+	VoteDown(context.Context, *VoteRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedCoinServiceServer()
 }
 
@@ -99,6 +110,9 @@ func (UnimplementedCoinServiceServer) ListActiveCoins(context.Context, *emptypb.
 }
 func (UnimplementedCoinServiceServer) VoteUP(context.Context, *VoteRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VoteUP not implemented")
+}
+func (UnimplementedCoinServiceServer) VoteDown(context.Context, *VoteRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VoteDown not implemented")
 }
 func (UnimplementedCoinServiceServer) mustEmbedUnimplementedCoinServiceServer() {}
 
@@ -185,6 +199,24 @@ func _CoinService_VoteUP_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CoinService_VoteDown_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoinServiceServer).VoteDown(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CoinService/VoteDown",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoinServiceServer).VoteDown(ctx, req.(*VoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CoinService_ServiceDesc is the grpc.ServiceDesc for CoinService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,6 +239,10 @@ var CoinService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VoteUP",
 			Handler:    _CoinService_VoteUP_Handler,
+		},
+		{
+			MethodName: "VoteDown",
+			Handler:    _CoinService_VoteDown_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
