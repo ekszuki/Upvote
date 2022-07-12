@@ -69,3 +69,21 @@ func (s *Server) ListActiveCoins(
 	logCtx.Info("finishing gRPC request")
 	return toListActiveResponse(list), err
 }
+
+func (s *Server) VoteUP(
+	ctx context.Context, req *protoCoin.VoteRequest,
+) (*emptypb.Empty, error) {
+	logCtx := logrus.WithFields(logrus.Fields{"component": "gRPCServer", "method": "VoteUP"})
+	logCtx.Info("starting gRPC request")
+
+	if !req.ProtoReflect().IsValid() {
+		logCtx.Warn("invalid delete coin request")
+		return &empty.Empty{}, fmt.Errorf("invalid vote up request")
+	}
+
+	coinApp := application.NewCoinApplication(s.Repositories.Coins)
+	err := coinApp.CoinVoteUP(ctx, uint(req.GetCoinID()))
+	logCtx.Info("finishing gRPC Request")
+
+	return &emptypb.Empty{}, err
+}

@@ -23,9 +23,14 @@ message ActiveCoinsResponse {
    repeated CreateCoinResponse ActiveCoins = 1;
 }
 
+message VoteRequest {
+   int32 CoinID = 1;
+}
+
 service CoinService {
    rpc CreateCoin(CreateCoinRequest) returns (CreateCoinResponse){}
    rpc DeleteCoin(DeleteCoinRequest) returns (google.protobuf.Empty){}
    rpc ListActiveCoins(google.protobuf.Empty) returns (ActiveCoinsResponse){}
+   rpc VoteUP(VoteRequest) returns (google.protobuf.Empty){}
 }
 

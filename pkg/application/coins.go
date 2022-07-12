@@ -26,7 +26,7 @@ func (a *CoinApplication) CreateCoin(
 
 	newCoin, err := a.coinRepository.Save(ctx, domainCoin)
 	if err != nil {
-		logCtx.Error("could not register new coin: %v", err)
+		logCtx.Errorf("could not register new coin: %v", err)
 	}
 
 	return newCoin, err
@@ -38,7 +38,7 @@ func (a *CoinApplication) DeleteCoin(
 	logCtx := logrus.WithFields(logrus.Fields{"component": "CoinApplication", "method": "DeleteCoin"})
 	err := a.coinRepository.Delete(ctx, coinID)
 	if err != nil {
-		logCtx.Error("could not delete coin id %d error: %v", coinID, err)
+		logCtx.Errorf("could not delete coin id %d error: %v", coinID, err)
 	}
 
 	return err
@@ -51,8 +51,20 @@ func (a *CoinApplication) ListActiveCoins(ctx context.Context) ([]domain.Coin, e
 
 	list, err := a.coinRepository.ListActive(ctx)
 	if err != nil {
-		logCtx.Error("could not get active coins %v", err)
+		logCtx.Errorf("could not get active coins %v", err)
 	}
 
 	return list, err
+}
+
+func (a *CoinApplication) CoinVoteUP(ctx context.Context, coinID uint) error {
+	logCtx := logrus.WithFields(
+		logrus.Fields{"component": "CoinApplication", "method": "CoinVoteUP"},
+	)
+	err := a.coinRepository.VoteUP(ctx, coinID)
+	if err != nil {
+		logCtx.Errorf("could not vote on coin id: %d, error: %v", coinID, err)
+	}
+
+	return err
 }

@@ -11,6 +11,7 @@ func (c *Coin) ToDomain() *domain.Coin {
 	domainCoin.ID = pointer.ToUint(c.ID)
 	domainCoin.Description = c.Description
 	domainCoin.Short = c.Short
+	domainCoin.Votes = c.Votes
 
 	return domainCoin
 }
@@ -23,6 +24,7 @@ func FromDomain(domainCoin *domain.Coin) *Coin {
 
 	coin.Description = domainCoin.Description
 	coin.Short = domainCoin.Short
+	coin.Votes = domainCoin.Votes
 
 	return coin
 }

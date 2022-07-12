@@ -2,6 +2,7 @@ package gormdb
 
 import (
 	"context"
+	"fmt"
 
 	"gorm.io/gorm"
 	"klever.io/interview/pkg/domain"
@@ -11,6 +12,23 @@ import (
 
 type coinRepository struct {
 	db *gorm.DB
+}
+
+// VoteUP implements coins.Repository
+func (r *coinRepository) VoteUP(ctx context.Context, coinID uint) error {
+	dbOpe := r.db.Model(&Coin{}).
+		Where("id = ?", coinID).
+		Update("votes", gorm.Expr("votes + ?", 1))
+
+	if dbOpe.Error != nil {
+		return dbOpe.Error
+	}
+
+	if dbOpe.RowsAffected <= 0 {
+		return fmt.Errorf("Coin not found")
+	}
+
+	return nil
 }
 
 // ListActive implements coins.Repository
