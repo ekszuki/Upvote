@@ -2,19 +2,26 @@ syntax = "proto3";
 
 option go_package = "./coins";
 
-message CoinRequest {
+import "google/protobuf/empty.proto";
+
+message CreateCoinRequest {
    string Description = 1;
    string Short = 2;
 }
 
-message CoinResponse {
+message CreateCoinResponse {
    int32 ID = 1;
    string Description = 2;
    string Short = 3;
 }
 
+message DeleteCoinRequest {
+   int32 ID = 1;
+}
+
 
 service CoinService {
-   rpc CreateCoin( CoinRequest ) returns (CoinResponse){}
+   rpc CreateCoin(CreateCoinRequest) returns (CreateCoinResponse){}
+   rpc DeleteCoin(DeleteCoinRequest) returns (google.protobuf.Empty){}
 }
 

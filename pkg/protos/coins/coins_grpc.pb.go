@@ -8,6 +8,7 @@ package coins
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -22,7 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CoinServiceClient interface {
-	CreateCoin(ctx context.Context, in *CoinRequest, opts ...grpc.CallOption) (*CoinResponse, error)
+	CreateCoin(ctx context.Context, in *CreateCoinRequest, opts ...grpc.CallOption) (*CreateCoinResponse, error)
+	DeleteCoin(ctx context.Context, in *DeleteCoinRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type coinServiceClient struct {
@@ -33,9 +35,18 @@ func NewCoinServiceClient(cc grpc.ClientConnInterface) CoinServiceClient {
 	return &coinServiceClient{cc}
 }
 
-func (c *coinServiceClient) CreateCoin(ctx context.Context, in *CoinRequest, opts ...grpc.CallOption) (*CoinResponse, error) {
-	out := new(CoinResponse)
+func (c *coinServiceClient) CreateCoin(ctx context.Context, in *CreateCoinRequest, opts ...grpc.CallOption) (*CreateCoinResponse, error) {
+	out := new(CreateCoinResponse)
 	err := c.cc.Invoke(ctx, "/CoinService/CreateCoin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coinServiceClient) DeleteCoin(ctx context.Context, in *DeleteCoinRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/CoinService/DeleteCoin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +57,8 @@ func (c *coinServiceClient) CreateCoin(ctx context.Context, in *CoinRequest, opt
 // All implementations must embed UnimplementedCoinServiceServer
 // for forward compatibility
 type CoinServiceServer interface {
-	CreateCoin(context.Context, *CoinRequest) (*CoinResponse, error)
+	CreateCoin(context.Context, *CreateCoinRequest) (*CreateCoinResponse, error)
+	DeleteCoin(context.Context, *DeleteCoinRequest) (*empty.Empty, error)
 	mustEmbedUnimplementedCoinServiceServer()
 }
 
@@ -54,8 +66,11 @@ type CoinServiceServer interface {
 type UnimplementedCoinServiceServer struct {
 }
 
-func (UnimplementedCoinServiceServer) CreateCoin(context.Context, *CoinRequest) (*CoinResponse, error) {
+func (UnimplementedCoinServiceServer) CreateCoin(context.Context, *CreateCoinRequest) (*CreateCoinResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCoin not implemented")
+}
+func (UnimplementedCoinServiceServer) DeleteCoin(context.Context, *DeleteCoinRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCoin not implemented")
 }
 func (UnimplementedCoinServiceServer) mustEmbedUnimplementedCoinServiceServer() {}
 
@@ -71,7 +86,7 @@ func RegisterCoinServiceServer(s grpc.ServiceRegistrar, srv CoinServiceServer) {
 }
 
 func _CoinService_CreateCoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CoinRequest)
+	in := new(CreateCoinRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +98,25 @@ func _CoinService_CreateCoin_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/CoinService/CreateCoin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoinServiceServer).CreateCoin(ctx, req.(*CoinRequest))
+		return srv.(CoinServiceServer).CreateCoin(ctx, req.(*CreateCoinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoinService_DeleteCoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCoinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoinServiceServer).DeleteCoin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CoinService/DeleteCoin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoinServiceServer).DeleteCoin(ctx, req.(*DeleteCoinRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -98,6 +131,10 @@ var CoinService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCoin",
 			Handler:    _CoinService_CreateCoin_Handler,
+		},
+		{
+			MethodName: "DeleteCoin",
+			Handler:    _CoinService_DeleteCoin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
