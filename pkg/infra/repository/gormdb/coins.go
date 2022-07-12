@@ -13,6 +13,19 @@ type coinRepository struct {
 	db *gorm.DB
 }
 
+// ListActive implements coins.Repository
+func (r *coinRepository) ListActive(ctx context.Context) ([]domain.Coin, error) {
+	var dbCoins = []Coin{}
+	err := r.db.Order("id").Find(&dbCoins).Error
+
+	coins := []domain.Coin{}
+	for _, c := range dbCoins {
+		coins = append(coins, *c.ToDomain())
+	}
+
+	return coins, err
+}
+
 // Delete implements coins.Repository
 func (r *coinRepository) Delete(ctx context.Context, coinID uint) error {
 	return r.db.Delete(&Coin{}, coinID).Error

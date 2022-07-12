@@ -43,3 +43,16 @@ func (a *CoinApplication) DeleteCoin(
 
 	return err
 }
+
+func (a *CoinApplication) ListActiveCoins(ctx context.Context) ([]domain.Coin, error) {
+	logCtx := logrus.WithFields(
+		logrus.Fields{"component": "CoinApplication", "method": "ListActiveCoins"},
+	)
+
+	list, err := a.coinRepository.ListActive(ctx)
+	if err != nil {
+		logCtx.Error("could not get active coins %v", err)
+	}
+
+	return list, err
+}
