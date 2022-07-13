@@ -1,12 +1,6 @@
 syntax = "proto3";
 
-
 option go_package = "./monitors";
-option (gogoproto.sizer_all) = true;
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.unmarshaler_all) =  true;
-
-import "gogoproto/gogo.proto";
 
 message CoinVoteMonitorResponse {
    int32 ID = 1;
