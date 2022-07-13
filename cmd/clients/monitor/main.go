@@ -19,18 +19,26 @@ func main() {
 	)
 
 	args := os.Args
-	if len(args) == 1 {
-		logCtx.Panic("coin id is required")
+	if len(args) != 3 {
+		fmt.Println("Invalid parameters, please use: ")
+		fmt.Println(" main [server_url] [coinID]")
+		fmt.Printf("\n Example: main localhost:9009 1")
+		os.Exit(-1)
 	}
 
-	coinID, err := strconv.ParseUint(args[1], 10, 32)
+	serverURL := args[1]
+	if serverURL == "" {
+		logCtx.Panic("Server URL is required")
+	}
+
+	coinID, err := strconv.ParseUint(args[2], 10, 32)
 	if err != nil {
 		logCtx.Panic("Invalid coin ID")
 	}
 
-	logCtx.Infof("starting new monitor to coin ID: %d", coinID)
+	logCtx.Infof("connecting monitor on server %s", serverURL)
 	conn, err := grpc.Dial(
-		"localhost:9090",
+		serverURL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -46,9 +54,10 @@ func main() {
 		},
 	)
 	if err != nil {
-		logCtx.Errorf("could not open stream on gRPCServer: %v", err)
+		logCtx.Fatalf("could not open stream on gRPCServer: %v", err)
 	}
 
+	logCtx.Infof("Monitoring coin id: %d", coinID)
 	done := make(chan bool)
 	go func() {
 		for {
@@ -62,7 +71,7 @@ func main() {
 			}
 
 			fmt.Printf(
-				"Description: %s \nShort: %s \nVotes: %d",
+				"Description: %s \nShort: %s \nVotes: %d\n",
 				resp.GetDescription(),
 				resp.GetShort(),
 				resp.GetVotes(),
