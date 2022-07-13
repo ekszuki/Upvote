@@ -89,7 +89,7 @@ func (a CoinApplication) FindByID(ctx context.Context, coinID uint) (*domain.Coi
 
 	coin, err := a.coinRepository.FindByID(ctx, coinID)
 	if err != nil {
-		logCtx.Error("could not get coin %v", err)
+		logCtx.Errorf("could not get coin %v", err)
 	}
 
 	return coin, err
