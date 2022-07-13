@@ -25,3 +25,13 @@ Technical Challenger Klever.io
 # Monitor Coin Service
   - gRPC calls using grpcurl
     - # grpcurl --plaintext -d '{ "CoinID": 2 }' localhost:9090 VoteMonitor/CoinMonitorVotes
+
+# Monitor Client
+  - Join folder cmd/clients/monitor
+    - # cd cmd/clients/monitor
+  - Run client Monitor (binary file)
+    - # ./main localhost:9090 1
+  - Run client Monitor (source code)
+    - # go run main localhost:9090 1
+
+    First parameter is server url and port and second parameter is coin id
